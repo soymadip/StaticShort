@@ -1,6 +1,6 @@
 {
   // Directory where shortlink folders will be generated
-  "outputDirectory": "/.build",
+  "outputDirectory": "/build",
 
   // Optional: Template name to use from templates directory (default: default.html)
   "template": "default.html",
