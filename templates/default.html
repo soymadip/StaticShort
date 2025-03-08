@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex,nofollow" />
+    <style>
+      :root {
+        --bg: #1e1e2e;
+        --text: #cdd6f4;
+        --accent: #ea999c;
+        --surface1: #313244;
+        --surface2: rgba(0, 0, 0, 0.1);
+        --surface3: rgba(255, 255, 255, 0.1);
+      }
+
+      body {
+        background-color: var(--bg);
+        color: var(--text);
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+          sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        height: 100vh;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+
+      .container {
+        background-color: var(--surface1);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px var(--surface2);
+        max-width: 90%;
+        width: 500px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .redirect-icon {
+        margin-bottom: 1rem;
+        animation: pulse 2s infinite;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+        margin: 0 0 0.5rem 0;
+      }
+
+      .domain {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--accent);
+        margin-bottom: 1rem;
+        display: block;
+      }
+
+      p {
+        margin: 0 0 1rem 0;
+        opacity: 0.9;
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+        transition: opacity 0.2s;
+        word-break: break-all;
+      }
+
+      a:hover {
+        opacity: 0.8;
+      }
+
+      .progress {
+        width: 100%;
+        height: 6px;
+        background-color: var(--surface3);
+        border-radius: 3px;
+        overflow: hidden;
+        margin-top: 1rem;
+      }
+
+      .progress-bar {
+        height: 100%;
+        background-color: var(--accent);
+        animation: progress 1.4s linear forwards;
+      }
+
+      @keyframes progress {
+        0% {
+          width: 0;
+        }
+        100% {
+          width: 100%;
+        }
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.7;
+        }
+      }
+
+      .url-container {
+        font-size: 0.9rem;
+        color: var(--text);
+        opacity: 0.7;
+        margin-top: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="redirect-icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="48"
+          height="48"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+          ></path>
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <line x1="10" y1="14" x2="21" y2="3"></line>
+        </svg>
+      </div>
+      <h1>Taking you to</h1>
+      <a href="{{url}}">{{domain}}</a>
+      <div class="progress">
+        <div class="progress-bar"></div>
+      </div>
+    </div>
+  </body>
+</html>
