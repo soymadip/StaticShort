@@ -1,6 +1,8 @@
 {
 
-  "buildDir": "/build",
+  "buildDir": "build",
+
+  "deploy_path": "/",
   
   "addIndex": true,
 

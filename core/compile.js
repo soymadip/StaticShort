@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const consola = require('consola');
 const { URL } = require('url');
-const { loadConfig, loadShortlinks } = require('./confLoader');
+const { loadConfig, loadShortlinks, getOutputDir } = require('./confLoader');
 
 const config = loadConfig();
 const shortlinks = loadShortlinks();
@@ -16,18 +16,22 @@ const redirectScript = `
       window.location.replace("{{url}}");
       console.log("Redirecting to: {{url}}");
     </script>
-    `;
+`;
 
 const metaRefresh = `
 
     <!-- Fallback redirect -->
     <meta http-equiv="refresh" content="${config.metaDelay};url={{url}}" />
-    `;
+`;
 
 const favicon = `
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="${config.favicon}" />
-    `;
+    <link
+      rel="icon"
+      type="image/png"
+      href="${config.favicon}"
+    />
+`;
 
 
 //---------------- functions ----------------
@@ -48,30 +52,32 @@ function getDomainFromURL(url) {
 
 
 function processTemplate(template, key, url) {
+
   const domain = getDomainFromURL(url);
   const faviconUrl = config.favicon;
 
   let processedTemplate = template;
   
-  // Prepare redirect content
+  // Put redirect methods 
   const redirectContent = `
     <title>Redirecting to ${url}</title>
     ${redirectScript}${metaRefresh}${favicon}`;
 
-  // Insert redirect content
+  // Inject redirects
   if (processedTemplate.includes('<head>')) 
   {
-    // Insert after first <head> tag
+    // After first <head>
     const headMatch = processedTemplate.match(/<head[^>]*>/i);
 
     if (headMatch) 
     {
       const insertPosition = headMatch.index + headMatch[0].length;
+
       processedTemplate = processedTemplate.slice(0, insertPosition) 
         + redirectContent 
         + processedTemplate.slice(insertPosition);
     }
-  } 
+  }
   else if (processedTemplate.includes('<html')) 
   {
     processedTemplate = processedTemplate.replace(/<html[^>]*>/i, `$&\n  <head>${redirectContent}</head>`);
@@ -81,7 +87,7 @@ function processTemplate(template, key, url) {
     processedTemplate = `<!DOCTYPE html>\n<html>\n  <head>${redirectContent}</head>\n${processedTemplate}</html>`;
   }
 
-  // parse placeholders
+  // parse variables
   processedTemplate = processedTemplate
     .replace(/{{url}}/g, url)
     .replace(/{{domain}}/g, domain)
@@ -92,12 +98,12 @@ function processTemplate(template, key, url) {
 }
 
 
-function parseIndexPage(outputBaseDir, shortlinks) {
+function parseIndexPage(outputBaseDir, shortlinks, deployPath) {
   const IndexTemplatePath = path.join(__dirname, '..', 'templates', '_index.html');
   
   if (!fs.existsSync(IndexTemplatePath))
   {
-    consola.error(`Index template not found: ${IndexTemplatePath}`);
+    consola.error(`Index template not found at ${IndexTemplatePath}`);
     return false;
   }
   
@@ -107,12 +113,13 @@ function parseIndexPage(outputBaseDir, shortlinks) {
     // Get the count of entries
     const count = Object.keys(shortlinks).length;
     
-    // Generate shortlink list
+    const basePath = deployPath === '/' ? '' : deployPath;
+
     const shortlinkList = Object.entries(shortlinks)
-      .map(([key, url]) => `<li><a href="${key}/" class="row-link"><span class="key">/${key}</span><span class="arrow">→</span><span class="domain-name">${url}</span></a></li>`)
+      .map(([key, url]) => `<li><a href="${basePath}/${key}/" class="row-link"><span class="key">/${key}</span><span class="arrow">→</span><span class="domain-name">${url}</span></a></li>`)
       .join('\n              ');
-    
-    // Replace shortlinks, Link count and favicon
+
+    // Parse shortlinks, Link count and favicon
     const parsedIndex = IndexContent
       .replace('{{shortlinks}}', shortlinkList)
       .replace('{{count}}', count)
@@ -121,13 +128,11 @@ function parseIndexPage(outputBaseDir, shortlinks) {
     // Write to index.html
     fs.writeFileSync(path.join(outputBaseDir, 'index.html'), parsedIndex);
 
-    consola.success(`Added Index page at /`);
     return true;
 
   } catch (error) {
 
-    consola.warn(`Failed to add Index page: ${error.message}`);
-
+    consola.warn(`❌ Failed to add Index page: ${error.message}`);
     return false;
   }
 }
@@ -135,39 +140,50 @@ function parseIndexPage(outputBaseDir, shortlinks) {
 
 function generateRedirects() {
 
+  const deployPath = config.deploy_path;
+  const outputBaseDir = getOutputDir();
+
   if (!shortlinks) 
   {
-    consola.error('No shortlinks in your shortlink DB.');
+    consola.error('❌ No shortlinks in your shortlink DB.');
     return;
   }
 
   try 
   {
-    // Read and validate HTML template
-    if (!fs.existsSync(templatePath)) {
-      throw new Error(`Template file not found: ${templatePath}`);
+    // Read & validate template
+    if (!fs.existsSync(templatePath))
+    {
+      consola.error(new Error(`❌ Template file not found ${templatePath}`));
     }
     
     const templateContent = fs.readFileSync(templatePath, 'utf8');
-    consola.success(`Template loaded: ${templatePath}\n`);
 
-    const outputBaseDir = path.join(__dirname, '..', config.buildDir);
+    console.log(`📝 Template loaded: ${templatePath}\n`);
 
     if (!fs.existsSync(outputBaseDir)) 
     {
       fs.mkdirSync(outputBaseDir, { recursive: true });
-      consola.success(`Created build directory: ${outputBaseDir}`);
+      consola.success(`📁 Created build directory: ${outputBaseDir}`);
     }
 
-    // Add Index page if enabled
-    if (config.addIndex === true) 
-    {
-      parseIndexPage(outputBaseDir, shortlinks);
-    }
-
-    // Loop over each entry
-    consola.info("Generating: ");
+    console.log("\n" + "─".repeat(50));
+    console.log("🔗 Generating shortlinks :-");
+    
     let count = 0;
+
+    if (config.addIndex === true)
+    {
+      const indexSuccess = parseIndexPage(outputBaseDir, shortlinks, deployPath);
+
+      if (indexSuccess)
+      {
+        const displayPath = deployPath === '/' ? '/' : deployPath;
+
+        consola.success(`    ${displayPath}        →  index page`);
+        count++;
+      }
+    }
 
     for (const [key, url] of Object.entries(shortlinks)) 
     {
@@ -186,17 +202,24 @@ function generateRedirects() {
       const outputPath = path.join(shortlinkDir, 'index.html');
 
       fs.writeFileSync(outputPath, htmlContent);
-      consola.success(`    /${key} → ${url}`);
 
-      // Increse count
+      const displayPath = deployPath === '/' ? 
+        `/${key}` : 
+        `${deployPath}/${key}`;
+
+      consola.success(`    ${displayPath}  →  ${url}`);
+
       count++;
     }
 
-    console.log(`\n✅ Generated ${count} shortlinks in \`${outputBaseDir}\`\n`);
-  } 
+    console.log("─".repeat(50) + "\n");
+    console.log(`🎉 Generated ${count} shortlinks in \`${outputBaseDir}\``);
+    consola.success(` Deploy path: ${deployPath}\n`);
+  }
   catch (error) 
   {
-    consola.error(`\nFailed to generate redirects: ${error.message}`);
+    console.log("\n");
+    console.log(`❌ Failed to generate redirects: ${error.message}`);
     consola.error(error);
   }
 }

@@ -27,6 +27,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Copy Demo Data
+        if: github.event.repository.fork == false
+        run: |
+          echo "Copying demo Shortlinks..."
+          rm shortlinks.jsonc
+          cp Assets/demo/shortlinks.jsonc .
+
+          echo "Setting deploy path to /demo"
+          sed -i 's|"deploy_path": "[^"]*"|"deploy_path": "/demo"|' static-short.jsonc
+
       - name: Build static redirects
         run: npm run build
 

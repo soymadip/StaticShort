@@ -33,28 +33,28 @@ function showHelp() {
 }
 
 function compile() {
-
-  consola.start('Generating redirect pages...\n');
-
   const { generateRedirects } = require('./core/compile');
+
+  console.log('🚀 Generating redirect pages...\n');
+
   generateRedirects();
 }
 
 function clean() {
+  const { cleanRedirectPages } = require('./core/clean');
 
-  consola.start('Cleaning redirect directories...\n');
+  console.log('🧹 Cleaning redirect directories...\n');
 
-  require('./core/clean');
+  cleanRedirectPages();
 }
 
 function startServer() {
-  
+  const { startDevServer } = require('./core/server');
+
   clean();
   compile();
 
-  consola.start('Starting development server...\n');
-  
-  const { startDevServer } = require('./core/server');
+  console.log('🌐 Starting development server...\n');
 
   startDevServer({ port: 8081 });
 }

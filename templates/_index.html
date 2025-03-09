@@ -227,8 +227,25 @@
     }
     
     @media (max-width: 480px) {
+      
+      .layout-container {
+        padding: 20px 0px ;
+      }
+      
+      .container {
+        padding: 1rem 0.8rem 0.5rem 0.8rem;
+        width: calc(100% - 2rem);
+      }
+
+      .links-container {
+        height: 310px;
+        overflow-y: auto;
+        padding-right: 5px;
+        padding-left: 2px;
+      }
+
       .domain-name {
-        max-width: 50%;
+        max-width: 60%;
       }
       
       li {
@@ -241,15 +258,16 @@
       }
 
       .count-badge {
-        font-size: 0.75rem;
-        padding: 1px 5px;
-        height: 16px;
-        min-width: 14px;
+        font-size: 0.7rem;
+        margin-top: 4px;
+        padding: 1.2px 4px;
+        height: 13px;
+        min-width: 12px;
         top: 1px;
       }
 
       h1 {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
       }
     }
   </style>

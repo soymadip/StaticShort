@@ -12,6 +12,7 @@
         --surface1: #313244;
         --surface2: rgba(0, 0, 0, 0.1);
         --surface3: rgba(255, 255, 255, 0.1);
+        --subtext0: #a6adc8;
       }
 
       body {
@@ -43,7 +44,6 @@
 
       .redirect-icon {
         margin-bottom: 1rem;
-        animation: pulse 2s infinite;
       }
 
       h1 {
@@ -99,21 +99,25 @@
         }
       }
 
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.7;
-        }
-      }
-
       .url-container {
         font-size: 0.9rem;
         color: var(--text);
         opacity: 0.7;
         margin-top: 0.5rem;
+      }
+
+      .box-footer {
+        text-align: center;
+        font-size: 0.78rem;
+        color: var(--subtext0);
+        padding-top: 0.8rem;
+        border-top: 1px solid var(--surface3);
+        margin-top: 1.5rem;
+        width: 100%;
+      }
+
+      .box-footer p {
+        margin: 0;
       }
     </style>
   </head>
@@ -142,6 +146,9 @@
       <a href="{{url}}">{{domain}}</a>
       <div class="progress">
         <div class="progress-bar"></div>
+      </div>
+      <div class="box-footer">
+        <p>Powered by <a href="https://github.com/soymadip/StaticShort" target="_blank">StaticShort</a></p>
       </div>
     </div>
   </body>

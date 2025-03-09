@@ -1,12 +1,16 @@
 <div align="center">
-  <img src="Assets/icon.png" width=120 alt="static-short">
+  <img 
+    src="Assets/icon.png" 
+    width=120 
+    alt="static-short"
+  >
   <h1>StaticShort</h1>
-<p>A simple static URL shortener that generates HTML files for redirects, without need of a backend server.</p>
+  <p>A static URL shortener that generates HTML files for redirects, without need of a backend server.</p>
 </div>
 
 ## Features
 
-- **No Backend Server Required**: Pure static HTML redirects that work anywhere
+- **No Backend Server Required**: Pure static HTML, JS redirects, work anywhere
 - **Fast Redirects**: Instant redirects with progress indicator
 - **Multiple Redirect Methods**: JavaScript redirection with HTML meta fallback
 - **Index Page**: View all regestered Short Links in one place.
@@ -17,7 +21,7 @@
 ## Configuration
 
 
-### Define Shortlinks
+### Add Shortlink entries
 
 - Edit the [`shortlinks.jsonc`](./shortlinks.jsonc) file to define your short URLs.
 
@@ -27,37 +31,25 @@
     // if domain is a.com
 
     "gh": "https://github.com/soymadip",      // a.com/gh   -> https://github.com/soymadip
-    "blog": "https://soymadip.github.io",     // a.com/blog -> https://soymadip.github.io
+    "blog": "https://blog.soymadip.me",       // a.com/blog -> https://soymadip.github.io
 
   }
   ```
 
-### Change Defaults
+### Changing Defaults
 
-Edit the [`static-short.jsonc`](./static-short.jsonc) file to customize the build directory and other settings:
+StaticShort can be configured using the [`static-short.jsonc`](./static-short.jsonc) file.<br> 
+Here are the available options :-
 
-```jsonc
-{
-  // Directory where shortlink folders will be generated
-  "buildDir": "build",
-  
-  // Add Index page at root with shortlink index
-  "addIndex": true,
-  
-  // File containing shortlink definitions
-  "shortLinkDB": "shortlinks.jsonc",
-  
-  // Template to use from templates directory
-  "template": "default.html",
-  
-  // Favicon url
-  "favicon": "url/to/favicon",
-  
-  // Delay before trigarring fallback redirect method.
-  "metaDelay": "0.2",
-  
-}
-```
+- `buildDir`: Directory where the generated files will be placed
+- `deploy_path`: Base path where the site will be deployed.
+    - Use `/` for root domain deployment (e.g., example.com/)
+    - Use `/<sub>` for subdirectory deployment (e.g., `/sub` will `example.com/demo/`)
+- `shortLinkDB`: File containing the shortlink definitions
+- `addIndex`: Whether to generate an index page
+- `template`: HTML [template](#adding-templates) for redirect pages
+- `favicon`: Url or path of favicon
+- `metaDelay`: Delay before trigarring fallback redirect method
 
 
 ### Adding templates
@@ -95,8 +87,10 @@ Default template is mostly enough, but in case custom can be made:-
 
 ## Limitation
 
-As this kind of redirection is done at client side,<br>
-if tools like `curl` or `wget` is used, generated `index.html`'s content is returned instead of following rediection.
+- As this kind of redirection is done at client side,<br>
+  If tools like `curl` or `wget` is used, generated `index.html`'s content is returned instead of following rediection.
+
+- The codebase is a bit messy, But it gets it's job done reliably.
 
 
 ## Credits
