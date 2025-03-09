@@ -20,6 +20,7 @@ function showHelp() {
     static-short [command]
 
   Commands:
+    start       Start a development server to redirect pages
     build       Generate redirect pages (default)
     clean       Remove existing redirect pages
     help        Show this help message
@@ -32,6 +33,28 @@ function showHelp() {
   `);
 }
 
+function compile() {
+
+  consola.start('Generating redirect pages...\n');
+
+  const { generateRedirects } = require('./core/compile');
+  generateRedirects();
+}
+
+function clean() {
+
+  consola.start('Cleaning redirect directories...\n');
+
+  require('./core/clean');
+}
+
+function startServer() {
+  consola.start('Starting development server...\n');
+  
+  const { startDevServer } = require('./core/server');
+
+  startDevServer({ port: 8081 });
+}
 
 /*-------------------------- Main --------------------------*/
 
@@ -40,22 +63,22 @@ displayBanner();
 // Check for argument
 const command = args[0] || 'build';
 
-
 switch (command.toLowerCase()) 
 {
   case 'build':
-    consola.start('Generating redirect pages...');
-    const { generateRedirects } = require('./core/compile');
-    generateRedirects();
+    compile();
     break;
 
   case 'clean':
-    consola.start('Cleaning redirect directories...');
-    require('./core/clean');
+    clean();
     break;
 
   case 'help':
     showHelp();
+    break;
+
+  case 'start':
+    startServer();
     break;
 
   default:

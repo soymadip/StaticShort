@@ -1,14 +1,11 @@
 {
-  // Directory where shortlink folders will be generated
-  "outputDirectory": "/build",
 
-  // Optional: Template name to use from templates directory (default: default.html)
-  "template": "default.html",
+  "buildDir": "/build",
+  
+  "addIndex": true,
 
-  // File containing shortlink definitions
   "shortLinkDB": "shortlinks.jsonc",
 
-  // Format for the page title. Supports {{domain}} and {{key}} variables.
-  "titleFormat": "Redirecting you to {{domain}}"
+  "template": "default.html"
 
 }

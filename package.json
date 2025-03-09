@@ -1,8 +1,8 @@
 {
   "name": "static-short",
-  "description": "A static URL shortener that generates HTML files for redirects",
+  "description": "A static URL shortener generator",
   "author": "soymadip",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "license": "GPL-3.0-only",
   "repository": {
     "type": "git",
@@ -11,7 +11,7 @@
   "private": true,
 
   "scripts": {
-    "start": "npm run build && live-server .build --port=8081",
+    "start": "node index.js start",
     "build": "node index.js build",
     "clean": "node index.js clean",
     "help": "node index.js help"
@@ -28,15 +28,14 @@
   "bin": {
     "static-short": "./index.js"
   },
-  "engines": {
-    "node": ">=14.0"
-  }, 
 
   "dependencies": {
     "consola": "^2.15.3",
-    "jsonc-parser": "^3.2.0"
-  },
-  "devDependencies": {
+    "jsonc-parser": "^3.2.0",
     "live-server": "^1.2.2"
+  },
+    
+  "engines": {
+    "node": ">=14.0"
   }
 }

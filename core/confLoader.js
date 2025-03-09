@@ -4,9 +4,12 @@ const jsoncParser = require("jsonc-parser");
 const consola = require("consola");
 
 const defaultConfig = {
-  outputDirectory: "redirect",
+  buildDir: "build",
   shortLinkDB: "shortlinks.jsonc",
-  titleFormat: "Redirecting you to {{domain}}"
+  addIndex: true,
+  template: "default.html",
+  metaDelay: 0.2,
+  favicon: "https://img.icons8.com/?size=100&id=mJBPC3kRqGZd&format=png&color=000000"
 };
 
 // Cache for loaded data
@@ -32,12 +35,18 @@ function loadConfig() {
       // Validate required fields
       const finalConfig = { ...defaultConfig, ...config };
 
-      if (!finalConfig.outputDirectory) 
-      {
-        throw new Error("'outputDirectory' is missing in config");
+      // Handle legacy outputDirectory property
+      if (finalConfig.outputDirectory && !finalConfig.buildDir) {
+        finalConfig.buildDir = finalConfig.outputDirectory;
+        consola.warn('The "outputDirectory" property is deprecated, please use "buildDir" instead');
       }
 
-      consola.success("Configuration loaded successfully");
+      if (!finalConfig.buildDir) 
+      {
+        throw new Error("'buildDir' is missing in config");
+      }
+
+      consola.success(`Configuration loaded: ${configPath}\n`);
       cachedConfig = finalConfig;
       return cachedConfig;
     }
@@ -85,7 +94,7 @@ function loadShortlinks() {
       return cachedShortlinks;
 
     } else {
-      throw new Error(`Shortlinks file not found at ${shortlinksPath}`);
+      throw new Error(`Shortlink DB not found at ${shortlinksPath}`);
     }
 
   } catch (error) {

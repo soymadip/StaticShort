@@ -6,7 +6,7 @@ const { loadConfig, loadShortlinks } = require('./confLoader');
 const config = loadConfig();
 const shortlinks = loadShortlinks();
 
-const outputDir = path.join(__dirname, "..", config.outputDirectory);
+const outputDir = path.join(__dirname, "..", config.buildDir);
 
 
 if (!shortlinks) 
@@ -16,13 +16,24 @@ if (!shortlinks)
 }
 
 consola.info(`Found ${Object.keys(shortlinks).length} shortlinks.`);
+
 const shortlinkKeys = Object.keys(shortlinks);
 
-
-
-// Check if output directory exists
 if (fs.existsSync(outputDir)) 
 {
+
+  // For index page
+  if (config.addIndex === true) 
+  {
+    consola.info("Found index Page.");
+
+    const indexPath = path.join(outputDir, "index.html");
+    fs.rmSync(indexPath, { force: true });
+
+    consola.success("Deleted: index.html");
+    
+  }
+
   // Read all entries
   const entries = fs.readdirSync(outputDir, { withFileTypes: true });
 
@@ -31,12 +42,14 @@ if (fs.existsSync(outputDir))
     .filter(entry => entry.isDirectory() && shortlinkKeys.includes(entry.name))
     .forEach(entry => {
       const entryPath = path.join(outputDir, entry.name);
+
       fs.rmSync(entryPath, { recursive: true, force: true });
-      consola.success(`Deleted: ${entry.name}`);
+
+      consola.success(`Deleted: ${entry.name}/`);
     });
 
   consola.success("CleanUp complete!");
 
 } else {
-  consola.warn(`Output directory doesn't exist: ${outputDir}`);
+  consola.warn(`Build directory doesn't exist: ${outputDir}`);
 }

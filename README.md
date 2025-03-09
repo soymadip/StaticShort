@@ -14,8 +14,30 @@
 
 ## Configuration
 
-Edit the [`static-short.jsonc`](./static-short.jsonc) file to customize the output directory and other settings:
+Edit the [`static-short.jsonc`](./static-short.jsonc) file to customize the build directory and other settings:
 
+```jsonc
+{
+  // Directory where shortlink folders will be generated
+  "buildDir": "build",
+  
+  // Add Index page at root with shortlink index
+  "addIndex": true,
+  
+  // File containing shortlink definitions
+  "shortLinkDB": "shortlinks.jsonc",
+  
+  // Template to use from templates directory
+  "template": "default.html",
+  
+  // Favicon url
+  "favicon": "url/to/favicon",
+  
+  // Delay before trigarring fallback redirect method.
+  "metaDelay": "0.2",
+  
+}
+```
 
 ### Define Shortlinks
 
@@ -26,11 +48,14 @@ Edit the [`static-short.jsonc`](./static-short.jsonc) file to customize the outp
 
 Templates are used to generate the `index.html` files. 
 
+Default template is mostly enough, but in case custom can be made:-
+
 1. Add your template html files in `templates` dir.
 2. Below vars can be used to get dynamic values:
    - `{{url}}` -> Redirection URL
    - `{{domain}}` -> Domain name of redirection URL
    - `{{key}}` -> The shortlink path.
+   - `{{faviconUrl}}` -> Favicon URL.
 
 
 ## Deployment
@@ -55,11 +80,12 @@ Templates are used to generate the `index.html` files.
 
 ## Limitation
 
-As this kind of redirection is done at client side, 
+As this kind of redirection is done at client side,<br>
 if tools like `curl` or `wget` is used, generated `index.html`'s content is returned instead of following rediection.
 
 
 ## Credits
 
 - This project is inspired be [urlzap](https://github.com/brunoluiz/urlzap).
-- The default template is created by [deepseek R1](https://www.deepseek.com/) hosted locally using [Ollama](https://ollama.com/library/deepseek-r1).
+- The default templates are created by [deepseek R1](https://www.deepseek.com/) hosted locally using [Ollama](https://ollama.com/library/deepseek-r1).
+- StackOverflow therads, for providing me support.
