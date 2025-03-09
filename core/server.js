@@ -33,8 +33,7 @@ function startDevServer(options = {}) {
     logLevel: 2,
   };
 
-  consola.info(`Server starting at http://localhost:${params.port}`);
-  consola.info(`Serving from directory: ${outputDir}`);
+  consola.info(`Starting Dev Server.`);
 
   // Start live server
   liveServer.start(params);

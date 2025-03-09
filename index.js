@@ -15,7 +15,6 @@ function displayBanner() {
 
 function showHelp() {
   console.log(`
-
   Usage:
     static-short [command]
 
@@ -49,6 +48,10 @@ function clean() {
 }
 
 function startServer() {
+  
+  clean();
+  compile();
+
   consola.start('Starting development server...\n');
   
   const { startDevServer } = require('./core/server');

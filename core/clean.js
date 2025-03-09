@@ -48,8 +48,8 @@ if (fs.existsSync(outputDir))
       consola.success(`Deleted: ${entry.name}/`);
     });
 
-  consola.success("CleanUp complete!");
+  consola.success("CleanUp complete!\n");
 
 } else {
-  consola.warn(`Build directory doesn't exist: ${outputDir}`);
+  consola.warn(`Build directory doesn't exist: ${outputDir}\n`);
 }

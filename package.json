@@ -1,8 +1,8 @@
 {
   "name": "static-short",
-  "description": "A static URL shortener generator",
+  "description": "Create static URL shortner pages",
+  "version": "2.1.0",
   "author": "soymadip",
-  "version": "2.0.0",
   "license": "GPL-3.0-only",
   "repository": {
     "type": "git",
