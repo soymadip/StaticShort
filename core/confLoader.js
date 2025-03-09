@@ -9,7 +9,7 @@ const defaultConfig = {
   addIndex: true,
   template: "default.html",
   metaDelay: 0.2,
-  favicon: "https://img.icons8.com/?size=100&id=mJBPC3kRqGZd&format=png&color=000000"
+  favicon: "https://raw.githubusercontent.com/soymadip/StaticShort/refs/heads/main/Assets/icon.svg"
 };
 
 // Cache for loaded data

@@ -1,4 +1,5 @@
 <div align="center">
+  <img src="Assets/icon.png" width=120 alt="static-short">
   <h1>StaticShort</h1>
 <p>A simple static URL shortener that generates HTML files for redirects, without need of a backend server.</p>
 </div>
@@ -8,11 +9,30 @@
 - **No Backend Server Required**: Pure static HTML redirects that work anywhere
 - **Fast Redirects**: Instant redirects with progress indicator
 - **Multiple Redirect Methods**: JavaScript redirection with HTML meta fallback
-- **Customizable Templates**: Design your own redirect pages with variables
+- **Index Page**: View all regestered Short Links in one place.
+- **Customizable Templates**: Design your own redirect pages with dynamic values 
 - **Easy Deployment**: Works on GitHub Pages, Netlify, Vercel, or any static host
 
 
 ## Configuration
+
+
+### Define Shortlinks
+
+- Edit the [`shortlinks.jsonc`](./shortlinks.jsonc) file to define your short URLs.
+
+- The entries should be in below format :-
+  ```jsonc
+  {
+    // if domain is a.com
+
+    "gh": "https://github.com/soymadip",      // a.com/gh   -> https://github.com/soymadip
+    "blog": "https://soymadip.github.io",     // a.com/blog -> https://soymadip.github.io
+
+  }
+  ```
+
+### Change Defaults
 
 Edit the [`static-short.jsonc`](./static-short.jsonc) file to customize the build directory and other settings:
 
@@ -39,10 +59,6 @@ Edit the [`static-short.jsonc`](./static-short.jsonc) file to customize the buil
 }
 ```
 
-### Define Shortlinks
-
-- Edit the [`shortlinks.jsonc`](./shortlinks.jsonc) file to define your short URLs:
-
 
 ### Adding templates
 
@@ -60,13 +76,12 @@ Default template is mostly enough, but in case custom can be made:-
 
 ## Deployment
 
->[!WARNING]
-> GitHub pages workflow is yet to be done.
-
 1. For GitHub Pages, 
     - just fork this repo
-    - [Customize](#configuration) as you like
-    - Go to repo `settings>Pages` & select `Build & Deployment` to `GitHub Actions`
+    - Go to repo `settings`>`Pages` & select `Build & Deployment` to `GitHub Actions`
+    - [Customize](#configuration) as you like.
+    - Commit your changes & GitHub should do the rest automatically.
+    - go to `<your username>.github.io/<repo-name>`
 
 2. For other platforms, 
     - Generate static files using `npm run build` command
