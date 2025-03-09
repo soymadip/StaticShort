@@ -1,6 +1,6 @@
 {
   "name": "static-short",
-  "description": "Create static URL shortner pages",
+  "description": "A simple static URL shortener - no backend required, just static hosting.",
   "version": "2.2.1",
   "author": "soymadip",
   "license": "GPL-3.0-only",
