@@ -9,32 +9,25 @@
     "url": "https://github.com/soymadip/StaticShort"
   },
   "private": true,
-
   "scripts": {
-    "start": "node index.js start",
+    "start": "pnpm i && node index.js start",
     "build": "node index.js build",
     "clean": "node index.js clean",
     "help": "node index.js help"
   },
-
   "keywords": [
     "url-shortener",
     "static",
     "redirects",
     "html"
   ],
-
   "main": "index.js",
-  "bin": {
-    "static-short": "./index.js"
-  },
 
   "dependencies": {
-    "consola": "^3.4.0",
+    "consola": "^3.4.2",
     "jsonc-parser": "^3.3.1",
     "live-server": "^1.2.2"
   },
-    
   "engines": {
     "node": ">=14.0"
   }
