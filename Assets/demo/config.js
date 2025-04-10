@@ -1,4 +1,6 @@
-{
+exports.config = {
+
+  shortLinks: {
     "github":    "https://github.com/soymadip",
     "bs":        "https://search.brave.com",
     "linkedin":  "https://www.linkedin.com/in/soymadip",
@@ -26,5 +28,10 @@
     "stack": "https://stackoverflow.com",
     "tw": "https://www.twitter.com",
     "uber": "https://www.uber.com",
-    "zillow": "https://www.zillow.com"
-}
+    "zillow": "https://www.zillow.com"  },
+
+  // Config
+  buildDir: "build",
+  deploy_path: "/",
+  template: "default.html"
+};

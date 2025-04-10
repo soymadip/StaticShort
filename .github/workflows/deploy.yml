@@ -37,11 +37,8 @@ jobs:
         if: github.event.repository.fork == false
         run: |
           echo "Copying demo Shortlinks..."
-          rm shortlinks.jsonc
-          cp Assets/demo/shortlinks.jsonc .
-
-          echo "Setting deploy path to /demo"
-          sed -i 's|"deploy_path": "[^"]*"|"deploy_path": "/demo"|' static-short.jsonc
+          rm config.js
+          cp Assets/demo/config.js .
 
       - name: Build static redirects
         run: pnpm run build
