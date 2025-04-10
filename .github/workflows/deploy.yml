@@ -19,13 +19,16 @@ jobs:
         with:
           fetch-depth: 1
 
-      - uses: actions/setup-node@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
-
-      - name: Install pnpm
-        run: npm install -g pnpm
 
       - name: Install dependencies
         run: pnpm install
@@ -41,7 +44,7 @@ jobs:
           sed -i 's|"deploy_path": "[^"]*"|"deploy_path": "/demo"|' static-short.jsonc
 
       - name: Build static redirects
-        run: pnpm build
+        run: pnpm run build
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
