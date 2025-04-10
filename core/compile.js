@@ -13,15 +13,15 @@ const templatePath = path.join(__dirname, '..', 'templates', config.template || 
 const redirectScript = `
     <!-- Instant redirect -->
     <script>
-      window.location.replace("{{url}}");
-      console.log("Redirecting to: {{url}}");
+      window.location.replace("{{URL}}");
+      console.log("Redirecting to: {{URL}}");
     </script>
 `;
 
 const metaRefresh = `
 
     <!-- Fallback redirect -->
-    <meta http-equiv="refresh" content="${config.metaDelay};url={{url}}" />
+    <meta http-equiv="refresh" content="${config.metaDelay};url={{URL}}" />
 `;
 
 const favicon = `
@@ -88,13 +88,11 @@ function processTemplate(template, key, url) {
   }
 
   // parse variables
-  processedTemplate = processedTemplate
-    .replace(/{{url}}/g, url)
-    .replace(/{{domain}}/g, domain)
-    .replace(/{{key}}/g, key)
-    .replace(/{{faviconUrl}}/g, faviconUrl);
-
-  return processedTemplate;
+  return processedTemplate
+    .replace(/{{URL}}/g, url)
+    .replace(/{{DOMAIN}}/g, domain)
+    .replace(/{{KEY}}/g, key)
+    .replace(/{{FAVICON_URL}}/g, faviconUrl);
 }
 
 
@@ -119,11 +117,11 @@ function parseIndexPage(outputBaseDir, shortlinks, deployPath) {
       .map(([key, url]) => `<li><a href="${basePath}/${key}/" class="row-link"><span class="key">/${key}</span><span class="arrow">→</span><span class="domain-name">${url}</span></a></li>`)
       .join('\n              ');
 
-    // Parse shortlinks, Link count and favicon
-    const parsedIndex = IndexContent
-      .replace('{{shortlinks}}', shortlinkList)
-      .replace('{{count}}', count)
-      .replace('{{favicon}}', config.favicon);
+    // Parse template variables
+    const parsedIndex = indexContent
+      .replace('{{SHORTLINKS}}', shortlinkList)
+      .replace('{{COUNT}}', count)
+      .replace('{{FAVICON_URL}}', config.favicon);
     
     // Write to index.html
     fs.writeFileSync(path.join(outputBaseDir, 'index.html'), parsedIndex);

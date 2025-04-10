@@ -60,10 +60,10 @@ Default template is mostly enough, but in case custom can be made:-
 
 1. Add your template html files in `templates` dir.
 2. Below vars can be used to get dynamic values:
-   - `{{url}}` -> Redirection URL
-   - `{{domain}}` -> Domain name of redirection URL
-   - `{{key}}` -> The shortlink path.
-   - `{{faviconUrl}}` -> Favicon URL.
+   - `{{URL}}` -> Redirection URL
+   - `{{DOMAIN}}` -> Domain name of redirection URL
+   - `{{KEY}}` -> The shortlink path.
+   - `{{FAVICON_URL}}` -> Favicon URL.
 
 
 ## Deployment
