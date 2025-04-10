@@ -23,7 +23,7 @@ function cleanRedirectPages() {
   console.log(`  Output dir: ${config.buildDir}/`);
   console.log(`  Deploy path: ${deployPath}\n`);
 
-  // Handle index page if enabled
+  // Clean index page if it exists
   if (config.addIndex === true) 
   {
     const indexPath = path.join(outputDir, "index.html");
@@ -46,14 +46,16 @@ function cleanRedirectPages() {
 
   consola.info(`Found ${shortlinkKeys.length} shortlinks in DB.`);
 
-  // Read all entries in output directory
+  // Find directories that match shortlink keys
   const entries = fs.readdirSync(outputDir, { withFileTypes: true });
 
-  // Filter directories, match shortlink keys
-  const existingDirs = entries.filter(entry => entry.isDirectory() && shortlinkKeys.includes(entry.name));
+  const existingDirs = entries.filter(entry => 
+    entry.isDirectory() && shortlinkKeys.includes(entry.name)
+  );
 
-  consola.info(`Exist ${existingDirs.length} shortlinks to clean.\n`);
+  consola.info(`Found ${existingDirs.length} shortlinks to clean.\n`);
 
+  // Remove each directory
   existingDirs.forEach(entry =>
   {
     const entryPath = path.join(outputDir, entry.name);
@@ -62,6 +64,7 @@ function cleanRedirectPages() {
     deletedItems.push(`${entry.name}/`);
   });
 
+  // Show cleanup summary
   if (deletedItems.length > 0)
   {
     console.log("\n" + "─".repeat(50));

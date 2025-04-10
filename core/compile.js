@@ -6,7 +6,6 @@ const { loadConfig, loadShortlinks, getOutputDir } = require('./confLoader');
 
 const config = loadConfig();
 const shortlinks = loadShortlinks();
-const templatePath = path.join(__dirname, '..', 'templates', config.template || 'default.html');
 
 // ----------------- templates -----------------
 
@@ -56,35 +55,36 @@ function processTemplate(template, key, url) {
   const domain = getDomainFromURL(url);
   const faviconUrl = config.favicon;
 
-  let processedTemplate = template;
-  
-  // Put redirect methods 
+  // Create the redirect content 
   const redirectContent = `
     <title>Redirecting to ${url}</title>
     ${redirectScript}${metaRefresh}${favicon}`;
 
-  // Inject redirects
-  if (processedTemplate.includes('<head>')) 
-  {
-    // After first <head>
-    const headMatch = processedTemplate.match(/<head[^>]*>/i);
+  // Process the template based on its structure
+  let processedTemplate = template;
+  
+  // Primary option: Insert after <head> tag if it exists
+  if (template.includes('<head>')) {
+    const headMatch = template.match(/<head[^>]*>/i);
 
     if (headMatch) 
     {
       const insertPosition = headMatch.index + headMatch[0].length;
-
-      processedTemplate = processedTemplate.slice(0, insertPosition) 
-        + redirectContent 
-        + processedTemplate.slice(insertPosition);
+      processedTemplate = template.slice(0, insertPosition) + 
+                          redirectContent + 
+                          template.slice(insertPosition);
     }
-  }
-  else if (processedTemplate.includes('<html')) 
-  {
-    processedTemplate = processedTemplate.replace(/<html[^>]*>/i, `$&\n  <head>${redirectContent}</head>`);
-  }
-  else 
-  {
-    processedTemplate = `<!DOCTYPE html>\n<html>\n  <head>${redirectContent}</head>\n${processedTemplate}</html>`;
+  } 
+  // Option 2: Add <head> tag if <html> exists
+  else if (template.includes('<html')) {
+    processedTemplate = template.replace(
+      /<html[^>]*>/i, 
+      `$&\n  <head>${redirectContent}</head>`
+    );
+  } 
+  // Option 3: Create a complete HTML document
+  else {
+    processedTemplate = `<!DOCTYPE html>\n<html>\n  <head>${redirectContent}</head>\n${template}</html>`;
   }
 
   // parse variables
@@ -97,24 +97,31 @@ function processTemplate(template, key, url) {
 
 
 function parseIndexPage(outputBaseDir, shortlinks, deployPath) {
-  const IndexTemplatePath = path.join(__dirname, '..', 'templates', '_index.html');
+  const indexTemplatePath = path.join(__dirname, '..', 'templates', '_index.html');
   
-  if (!fs.existsSync(IndexTemplatePath))
+  if (!fs.existsSync(indexTemplatePath)) 
   {
-    consola.error(`Index template not found at ${IndexTemplatePath}`);
+    consola.error(`Index template not found at ${indexTemplatePath}`);
     return false;
   }
   
   try {
-    const IndexContent = fs.readFileSync(IndexTemplatePath, 'utf8');
-    
-    // Get the count of entries
+    const indexContent = fs.readFileSync(indexTemplatePath, 'utf8');
     const count = Object.keys(shortlinks).length;
     
     const basePath = deployPath === '/' ? '' : deployPath;
+    
+    // Get latest config to ensure we have the latest favicon URL
+    const config = loadConfig();
 
     const shortlinkList = Object.entries(shortlinks)
-      .map(([key, url]) => `<li><a href="${basePath}/${key}/" class="row-link"><span class="key">/${key}</span><span class="arrow">→</span><span class="domain-name">${url}</span></a></li>`)
+      .map(([key, url]) => {
+        return `<li><a href="${basePath}/${key}/" class="row-link">
+          <span class="key">/${key}</span>
+          <span class="arrow">→</span>
+          <span class="domain-name">${url}</span>
+        </a></li>`.replace(/\s+/g, ' ');
+      })
       .join('\n              ');
 
     // Parse template variables
@@ -123,7 +130,7 @@ function parseIndexPage(outputBaseDir, shortlinks, deployPath) {
       .replace('{{COUNT}}', count)
       .replace('{{FAVICON_URL}}', config.favicon);
     
-    // Write to index.html
+    // Write to index page
     fs.writeFileSync(path.join(outputBaseDir, 'index.html'), parsedIndex);
 
     return true;
@@ -137,9 +144,12 @@ function parseIndexPage(outputBaseDir, shortlinks, deployPath) {
 
 
 function generateRedirects() {
-
+  const config = loadConfig();
+  const shortlinks = loadShortlinks();
+  
   const deployPath = config.deploy_path;
   const outputBaseDir = getOutputDir();
+  let count = 0;
 
   if (!shortlinks) 
   {
@@ -149,16 +159,20 @@ function generateRedirects() {
 
   try 
   {
+    // Get template path from config
+    const templatePath = path.join(__dirname, '..', 'templates', config.template || 'default.html');
+
     // Read & validate template
     if (!fs.existsSync(templatePath))
     {
-      consola.error(new Error(`❌ Template file not found ${templatePath}`));
+      throw new Error(`❌ Template file not found ${templatePath}`);
     }
     
     const templateContent = fs.readFileSync(templatePath, 'utf8');
 
     console.log(`📝 Template loaded: ${templatePath}\n`);
 
+    // Ensure build directory exists
     if (!fs.existsSync(outputBaseDir)) 
     {
       fs.mkdirSync(outputBaseDir, { recursive: true });
@@ -168,8 +182,7 @@ function generateRedirects() {
     console.log("\n" + "─".repeat(50));
     console.log("🔗 Generating shortlinks :-");
     
-    let count = 0;
-
+    // Generate index page if needed
     if (config.addIndex === true)
     {
       const indexSuccess = parseIndexPage(outputBaseDir, shortlinks, deployPath);
@@ -183,6 +196,7 @@ function generateRedirects() {
       }
     }
 
+    // Generate redirect pages for each shortlink
     for (const [key, url] of Object.entries(shortlinks)) 
     {
       // Create {{key}} directory
@@ -193,7 +207,7 @@ function generateRedirects() {
         fs.mkdirSync(shortlinkDir, { recursive: true });
       }
 
-      // Generate HTML
+      // Process template
       const htmlContent = processTemplate(templateContent, key, url);
       
       // Write to index.html
@@ -201,15 +215,16 @@ function generateRedirects() {
 
       fs.writeFileSync(outputPath, htmlContent);
 
+      // Display success message
       const displayPath = deployPath === '/' ? 
         `/${key}` : 
         `${deployPath}/${key}`;
 
       consola.success(`    ${displayPath}  →  ${url}`);
-
       count++;
     }
 
+    // Display summary
     console.log("─".repeat(50) + "\n");
     console.log(`🎉 Generated ${count} shortlinks in \`${outputBaseDir}\``);
     consola.success(` Deploy path: ${deployPath}\n`);

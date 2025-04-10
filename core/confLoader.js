@@ -5,7 +5,7 @@ const consola = require("consola");
 
 let cachedConfig = null;
 let cachedShortlinks = null;
-
+let splitConfig = null;
 
 // ---------------- Default Options ----------------
 
@@ -23,6 +23,35 @@ const defaultConfig = {
 
 // ---------------- Functions ----------------
 
+function getConfig() {
+
+  if (splitConfig !== null)
+  {
+    return splitConfig;
+  }
+
+  const configPath = path.join(__dirname, "..", "config.js");
+
+  if (fs.existsSync(configPath)) 
+  {
+    try 
+    {
+      splitConfig = require(configPath);
+      console.log(`📝 Configuration loaded: ${configPath}`);
+      return splitConfig;
+
+    } catch (error) 
+    {
+      consola.error(`Error loading config.js: ${error.message}. Falling back to JSONC configs.`);
+      splitConfig = false;
+    }
+  } else {
+    splitConfig = false;
+  }
+
+  return splitConfig;
+}
+
 
 function parseDeployPath(deployPath) {
 
@@ -31,19 +60,11 @@ function parseDeployPath(deployPath) {
     return '/';
   }
 
-  let final = deployPath;
-
-  if (!final.startsWith('/'))
-  {
-    final = '/' + final;
-  }
-
-  if (final.endsWith('/') && final !== '/')
-  {
-    final = final.slice(0, -1);
-  }
-
-  return final;
+  // Ensure path starts with '/'
+  let final = deployPath.startsWith('/') ? deployPath : `/${deployPath}`;
+  
+  // Remove trailing slash if not root
+  return (final !== '/' && final.endsWith('/')) ? final.slice(0, -1) : final;
 }
 
 
@@ -52,13 +73,9 @@ function getOutputDir() {
   const config = loadConfig();
   const buildDir = path.join(__dirname, "..", config.buildDir);
   
-  if (config.deploy_path === '/')
-  {
-    return buildDir;
-  } else {
-
-    return path.join(buildDir, config.deploy_path.substring(1));
-  }
+  return config.deploy_path === '/' 
+    ? buildDir
+    : path.join(buildDir, config.deploy_path.substring(1));
 }
 
 
@@ -68,51 +85,68 @@ function loadConfig() {
   {
     return cachedConfig;
   }
+  
+  // Try to load from config.js first
+  const unified = getConfig();
 
+  if (unified && unified.config) {
+    const configData = unified.config.shortener || unified.config;
+    const finalConfig = { ...defaultConfig, ...configData };
+
+    finalConfig.deploy_path = parseDeployPath(finalConfig.deploy_path);
+    cachedConfig = finalConfig;
+
+    return cachedConfig;
+  }
+
+  // Otherwise load from static-short.jsonc
   const configPath = path.join(__dirname, "..", "static-short.jsonc");
-
   try
   {
-    if (fs.existsSync(configPath)) 
+    if (!fs.existsSync(configPath)) 
     {
-      const configContent = fs.readFileSync(configPath, "utf8");
-      const errors = [];
-      const config = jsoncParser.parse(configContent, errors);
+      consola.warn("Config file not found, using defaults");
 
-      if (errors.length > 0) 
-      {
-        consola.error(`❌ JSONC parse errors: ${errors.map(e => e.error).join(", ")}`);
-        return { ...defaultConfig };
-      }
-
-      // Validate required fields
-      const finalConfig = { ...defaultConfig, ...config };
-
-      if (!finalConfig.buildDir) 
-      {
-        consola.error(`❌ 'buildDir' is missing in config`);
-        return { ...defaultConfig };
-      }
-
-      // Normalize deploy_path
-      finalConfig.deploy_path = parseDeployPath(finalConfig.deploy_path);
-
-      console.log(`📝 Configuration loaded: ${configPath}`);
-
-      cachedConfig = finalConfig;
-
+      cachedConfig = { ...defaultConfig };
+      cachedConfig.deploy_path = parseDeployPath(defaultConfig.deploy_path);
       return cachedConfig;
     }
+    
+    const configContent = fs.readFileSync(configPath, "utf8");
+    const errors = [];
+    const config = jsoncParser.parse(configContent, errors);
+
+    if (errors.length > 0)
+    {
+      consola.error(`JSONC parse errors: ${errors.map(e => e.error).join(", ")}`);
+      return { ...defaultConfig };
+    }
+
+    const finalConfig = { ...defaultConfig, ...config };
+
+    if (!finalConfig.buildDir) 
+    {
+      consola.error(`'buildDir' is missing in config`);
+      return { ...defaultConfig };
+    }
+
+    finalConfig.deploy_path = parseDeployPath(finalConfig.deploy_path);
+
+    console.log(`📝 Configuration loaded: ${configPath}`);
+
+    cachedConfig = finalConfig;
+
+    return cachedConfig;
   }
+
   catch (error)
   {
     consola.warn(`  Config error: ${error.message}. Using defaults`);
-  }
-
-  cachedConfig = { ...defaultConfig };
-  cachedConfig.deploy_path = parseDeployPath(defaultConfig.deploy_path);
+    cachedConfig = { ...defaultConfig };
+    cachedConfig.deploy_path = parseDeployPath(defaultConfig.deploy_path);
   
-  return cachedConfig;
+    return cachedConfig;
+  }
 }
 
 
@@ -123,6 +157,40 @@ function loadShortlinks() {
     return cachedShortlinks;
   }
 
+  const validateShortlinks = (links) => {
+    if (!links) return false;
+    
+    let isValid = true;
+    Object.entries(links).forEach(([key, url]) => {
+      if (typeof url !== 'string' || !url.startsWith('http')) 
+      {
+        consola.error(`Invalid URL for shortlink "${key}": ${url}`);
+        isValid = false;
+      }
+    });
+
+    return isValid;
+  };
+
+  // Try loading from config.js first
+  const unified = getConfig();
+
+  if (unified && unified.config)
+  {
+    const shortLinks = unified.config.shortLinks || 
+                      (unified.config.shortener && unified.config.shortener.shortLinks);
+    
+    if (shortLinks)
+    {
+      validateShortlinks(shortLinks);
+      cachedShortlinks = shortLinks;
+
+      console.log(`🔗 Shortlinks loaded: ${Object.keys(shortLinks).length}`);
+      return cachedShortlinks;
+    }
+  }
+
+  // Otherwise load from shortlinks file
   const config = loadConfig();
   const shortlinksPath = path.join(__dirname, "..", config.shortLinkDB);
 
@@ -136,33 +204,26 @@ function loadShortlinks() {
 
       if (errors.length > 0) 
       {
-        consola.error(`❌ JSONC parse errors: ${errors.map(e => e.error).join(", ")}`);
+        consola.error(`JSONC parse errors: ${errors.map(e => e.error).join(", ")}`);
         return null;
       }
 
       // Validate shortlinks
-      Object.entries(shortlinks).forEach(([key, url]) => {
-
-        if (typeof url !== 'string' || !url.startsWith('http')) 
-        {
-          consola.error(`❌ Invalid URL for shortlink "${key}": ${url}`);
-        }
-      });
+      validateShortlinks(shortlinks);
 
       cachedShortlinks = shortlinks;
       
       console.log(`🔗 Shortlinks loaded: ${Object.keys(shortlinks).length}`);
       
       return cachedShortlinks;
-
-    } else {
-      consola.error(`❌ Shortlink DB not found at ${shortlinksPath}`);
-      return null;
-    }
+    } 
+    
+    consola.error(`Shortlink DB not found at ${shortlinksPath}`);
+    return null;
 
   } catch (error) {
 
-    consola.error(`❌ Failed to load shortlinks: ${error.message}`);
+    consola.error(`Failed to load shortlinks: ${error.message}`);
     return null;
   }
 }

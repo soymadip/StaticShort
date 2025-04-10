@@ -33,7 +33,7 @@ function startDevServer(options = {}) {
     logLevel: 2,
   };
 
-  consola.info(`Starting Dev Server.`);
+  console.log('🌐 Starting development server...');
 
   // Start live server
   liveServer.start(params);

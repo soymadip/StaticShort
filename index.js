@@ -35,7 +35,7 @@ function showHelp() {
 function compile() {
   const { generateRedirects } = require('./core/compile');
 
-  console.log('🚀 Generating redirect pages...\n');
+  console.log('\n🚀 Generating redirect pages...');
 
   generateRedirects();
 }
@@ -43,7 +43,7 @@ function compile() {
 function clean() {
   const { cleanRedirectPages } = require('./core/clean');
 
-  console.log('🧹 Cleaning redirect directories...\n');
+  console.log('🧹 Cleaning redirect directories...');
 
   cleanRedirectPages();
 }
@@ -53,8 +53,6 @@ function startServer() {
 
   clean();
   compile();
-
-  console.log('🌐 Starting development server...\n');
 
   startDevServer({ port: 8081 });
 }
