@@ -3,7 +3,7 @@ exports.config = {
   shortLinks: {
     "github":    "https://github.com/soymadip",
     "bs":        "https://search.brave.com",
-    "linkedin":  "https://www.linkedin.com/in/soymadip",
+    "linkedin":  "https://example.com",
     "yt":        "https://www.youtube.com/",
     "ig":        "https://www.instagram.com",
     "example":   "https://example.com",
