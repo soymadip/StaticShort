@@ -2,7 +2,7 @@ exports.config = {
 
   shortLinks: {
     "exmpl": "https://example.com",
-    "kirei": "https://github.com/soymadip/KireiSakura-Kit"
+    "kirei": "https://github.com/soymadip/KireiSakura-Kit",
     "example": "https://example.com",
   },
 

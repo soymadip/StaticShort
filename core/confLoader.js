@@ -90,7 +90,7 @@ function loadConfig() {
   const unified = getConfig();
 
   if (unified && unified.config) {
-    const configData = unified.config.shortener || unified.config;
+    const configData = unified.config.link_shrotener || unified.config;
     const finalConfig = { ...defaultConfig, ...configData };
 
     finalConfig.deploy_path = parseDeployPath(finalConfig.deploy_path);
@@ -178,7 +178,7 @@ function loadShortlinks() {
   if (unified && unified.config)
   {
     const shortLinks = unified.config.shortLinks || 
-                      (unified.config.shortener && unified.config.shortener.shortLinks);
+                      (unified.config.link_shrotener && unified.config.link_shrotener.shortLinks);
     
     if (shortLinks)
     {
