@@ -23,22 +23,22 @@
 
 ### Add Shortlink entries
 
-- Edit the [`shortlinks.jsonc`](./shortlinks.jsonc) file to define your short URLs.
+- Edit the [`config.js`](./config.js) file to define your short URLs.
 
 - The entries should be in below format :-
-  ```jsonc
-  {
-    // if domain is a.com
+```js
+exports.config = {
 
-    "gh": "https://github.com/soymadip",      // a.com/gh   -> https://github.com/soymadip
-    "blog": "https://blog.soymadip.me",       // a.com/blog -> https://soymadip.github.io
-
-  }
+  shortLinks: {
+    "exmpl": "https://example.com",
+    "kirei": "https://github.com/soymadip/KireiSakura-Kit",
+    "example": "https://example.com",
+  }}
   ```
 
 ### Changing Defaults
 
-StaticShort can be configured using the [`static-short.jsonc`](./static-short.jsonc) file.<br> 
+StaticShort can be configured using the same [`config.js`](./config.js) file.<br> 
 Here are the available options :-
 
 - `buildDir`: Directory where the generated files will be placed
