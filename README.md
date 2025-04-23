@@ -13,7 +13,7 @@
 - **No Backend Server Required**: Pure static HTML, JS redirects, work anywhere
 - **Fast Redirects**: Instant redirects with progress indicator
 - **Multiple Redirect Methods**: JavaScript redirection with HTML meta fallback
-- **Index Page**: View all regestered Short Links in one place.
+- **Index Page**: View all registered Short Links in one place.
 - **Customizable Templates**: Design your own redirect pages with dynamic values 
 - **Easy Deployment**: Works on GitHub Pages, Netlify, Vercel, or any static host
 
@@ -30,7 +30,7 @@ exports.config = {
 
 ### Add Shortlink entries
 
-- Add entries in `config.shortLinks` array :-
+- Add entries in `config.shortLinks` object :-
 ```js
 exports.config = {
 
@@ -61,11 +61,11 @@ Here are the available options :-
 - `buildDir`: Directory where the generated files will be placed
 - `deploy_path`: Base path where the site will be deployed.
     - Use `/` for root domain deployment (e.g., example.com/)
-    - Use `/<sub>` for subdirectory deployment (e.g., `/sub` will `example.com/demo/`)
+    - Use `/<sub>` for subdirectory deployment (e.g., `/sub` will be `example.com/sub/`)
 - `addIndex`: Whether to generate an index page
 - `template`: HTML [template](#adding-templates) for redirect pages
 - `favicon`: Url or path of favicon
-- `metaDelay`: Delay before trigarring fallback redirect method
+- `metaDelay`: Delay before triggering fallback redirect method
 
 
 ### Adding templates
@@ -84,6 +84,28 @@ Default template is mostly enough, but in case custom can be made:-
    - `{{KEY}}` -> The shortlink path.
    - `{{FAVICON_URL}}` -> Favicon URL.
 
+## Integration with Portosaurus
+
+This project can be used alongside of [Portosaurus](https://github.com/soymadip/portosaurus).
+
+To achieve integration, you can use same `config.js` and options but  
+- Instead of `config` object's root, use `config.link_shortener`.
+- Same for defining shortlinks, use `config.link_shortener.shortLinks`.
+- Also an `enable` field for enabling the link shortener.
+
+```js
+exports.config = {
+  
+  link_shortener: {
+    enable: true,
+    buildDir: "/output",
+    template: "my_template.html",
+    shortLinks: {
+      "exmpl": "https://example.com",
+    }
+  }
+}
+  ```
 
 ## Development 
 
@@ -120,13 +142,13 @@ This will compile your shortlinks and serve them locally for testing before depl
 ## Limitation
 
 - As this kind of redirection is done at client side,<br>
-  If tools like `curl` or `wget` is used, generated `index.html`'s content is returned instead of following rediection.
+  If tools like `curl` or `wget` are used, generated `index.html`'s content is returned instead of following redirection.
 
-- The codebase is a bit messy, But it gets it's job done reliably.
+- The codebase is a bit messy, But it gets its job done reliably.
 
 
 ## Credits
 
-- This project is inspired be [urlzap](https://github.com/brunoluiz/urlzap).
+- This project is inspired by [urlzap](https://github.com/brunoluiz/urlzap).
 - The default templates are created by [deepseek R1](https://www.deepseek.com/) hosted locally using [Ollama](https://ollama.com/library/deepseek-r1).
-- StackOverflow therads, for providing me support.
+- StackOverflow threads, for providing me support.

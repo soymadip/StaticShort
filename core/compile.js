@@ -2,10 +2,9 @@ const fs = require('fs');
 const path = require('path');
 const consola = require('consola');
 const { URL } = require('url');
-const { loadConfig, loadShortlinks, getOutputDir } = require('./confLoader');
+const { loadConfig, loadShortlinks, getOutputDir, formatPath } = require('./confLoader');
 
 const config = loadConfig();
-const shortlinks = loadShortlinks();
 
 // ----------------- templates -----------------
 
@@ -109,11 +108,9 @@ function parseIndexPage(outputBaseDir, shortlinks, deployPath) {
     const indexContent = fs.readFileSync(indexTemplatePath, 'utf8');
     const count = Object.keys(shortlinks).length;
     
-    const basePath = deployPath === '/' ? '' : deployPath;
+    // Use the utility function for path formatting
+    const basePath = formatPath(deployPath, 'url');
     
-    // Get latest config to ensure we have the latest favicon URL
-    const config = loadConfig();
-
     const shortlinkList = Object.entries(shortlinks)
       .map(([key, url]) => {
         return `<li><a href="${basePath}/${key}/" class="row-link">
@@ -144,7 +141,6 @@ function parseIndexPage(outputBaseDir, shortlinks, deployPath) {
 
 
 function generateRedirects() {
-  const config = loadConfig();
   const shortlinks = loadShortlinks();
   
   const deployPath = config.deploy_path;
@@ -189,8 +185,7 @@ function generateRedirects() {
 
       if (indexSuccess)
       {
-        const displayPath = deployPath === '/' ? '/' : deployPath;
-
+        const displayPath = formatPath(deployPath, 'display');
         consola.success(`    ${displayPath}        →  index page`);
         count++;
       }
@@ -215,11 +210,7 @@ function generateRedirects() {
 
       fs.writeFileSync(outputPath, htmlContent);
 
-      // Display success message
-      const displayPath = deployPath === '/' ? 
-        `/${key}` : 
-        `${deployPath}/${key}`;
-
+      const displayPath = formatPath(deployPath, 'link')(key);
       consola.success(`    ${displayPath}  →  ${url}`);
       count++;
     }

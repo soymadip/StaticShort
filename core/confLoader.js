@@ -10,7 +10,6 @@ let splitConfig = null;
 // ---------------- Default Options ----------------
 
 const defaultConfig = {
-
   buildDir: "build",
   deploy_path: "/",
   shortLinkDB: "shortlinks.jsonc",
@@ -22,6 +21,20 @@ const defaultConfig = {
 
 
 // ---------------- Functions ----------------
+
+// Make onsistent path formatting
+function formatPath(path, type) {
+  switch (type) {
+    case 'display':
+      return path === '/' ? '/' : path;
+    case 'url':
+      return path === '/' ? '' : path;
+    case 'link':
+      return (key) => path === '/' ? `/${key}` : `${path}/${key}`;
+    default:
+      return path;
+  }
+}
 
 function getConfig() {
 
@@ -233,5 +246,6 @@ module.exports = {
   loadConfig,
   loadShortlinks,
   getOutputDir,
-  parseDeployPath
+  parseDeployPath,
+  formatPath
 };

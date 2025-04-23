@@ -1,12 +1,11 @@
 const fs = require("fs");
 const path = require("path");
 const consola = require("consola");
-const { loadConfig, loadShortlinks, getOutputDir } = require('./confLoader');
+const { loadConfig, loadShortlinks, getOutputDir, formatPath } = require('./confLoader');
 
+const config = loadConfig();
 
 function cleanRedirectPages() {
-
-  const config = loadConfig();
   const outputDir = getOutputDir();
   const shortlinks = loadShortlinks();
   const deployPath = config.deploy_path;
@@ -88,5 +87,5 @@ function cleanRedirectPages() {
 module.exports = {
 
   cleanRedirectPages
-}
+};
 
