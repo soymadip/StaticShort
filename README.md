@@ -20,32 +20,48 @@
 
 ## Configuration
 
+Configuration is done in [`config.js`](./config.js) file, in an object `config` :-
+
+```js
+exports.config = {
+  // shortlinks, configurations
+}
+  ```
 
 ### Add Shortlink entries
 
-- Edit the [`config.js`](./config.js) file to define your short URLs.
-
-- The entries should be in below format :-
+- Add entries in `config.shortLinks` array :-
 ```js
 exports.config = {
 
   shortLinks: {
     "exmpl": "https://example.com",
+    "ig":    "https://www.instagram.com",
     "kirei": "https://github.com/soymadip/KireiSakura-Kit",
-    "example": "https://example.com",
-  }}
+  }
+  }
   ```
 
 ### Changing Defaults
 
-StaticShort can be configured using the same [`config.js`](./config.js) file.<br> 
+Default options can be changed in the root of `config` object.  
+
+```js
+exports.config = {
+  
+  buildDir: "/output",
+  template: "my_template.html",
+  shortLinks: {
+    "exmpl": "https://example.com",
+  }
+  }
+  ```
 Here are the available options :-
 
 - `buildDir`: Directory where the generated files will be placed
 - `deploy_path`: Base path where the site will be deployed.
     - Use `/` for root domain deployment (e.g., example.com/)
     - Use `/<sub>` for subdirectory deployment (e.g., `/sub` will `example.com/demo/`)
-- `shortLinkDB`: File containing the shortlink definitions
 - `addIndex`: Whether to generate an index page
 - `template`: HTML [template](#adding-templates) for redirect pages
 - `favicon`: Url or path of favicon
@@ -59,11 +75,27 @@ Templates are used to generate the `index.html` files.
 Default template is mostly enough, but in case custom can be made:-
 
 1. Add your template html files in `templates` dir.
-2. Below vars can be used to get dynamic values:
+2. CSS should be included in the same file either using,
+   - `<style>` tag, or
+   - inline CSS
+3. Below vars can be used to get dynamic values:
    - `{{URL}}` -> Redirection URL
    - `{{DOMAIN}}` -> Domain name of redirection URL
    - `{{KEY}}` -> The shortlink path.
    - `{{FAVICON_URL}}` -> Favicon URL.
+
+
+## Development 
+
+StaticShort includes a built-in development server for local testing:
+
+```bash
+# Start the development server
+pnpm start
+# or
+npm run start
+```
+This will compile your shortlinks and serve them locally for testing before deployment
 
 
 ## Deployment
