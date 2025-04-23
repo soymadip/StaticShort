@@ -150,5 +150,6 @@ This will compile your shortlinks and serve them locally for testing before depl
 ## Credits
 
 - This project is inspired by [urlzap](https://github.com/brunoluiz/urlzap).
-- The default templates are created by [deepseek R1](https://www.deepseek.com/) hosted locally using [Ollama](https://ollama.com/library/deepseek-r1).
+- The default templates are created by [deepseek R1](https://www.deepseek.com/) hosted using [Ollama](https://ollama.com/library/deepseek-r1).
+- [KireiSakura Kit](https://github.com/soymadip/KireiSakura-Kit) for the release workflow.
 - StackOverflow threads, for providing me support.

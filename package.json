@@ -1,7 +1,7 @@
 {
   "name": "static-short",
   "description": "A static URL shortener - no backend required, just static hosting.",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "author": "soymadip",
   "license": "GPL-3.0-only",
   "repository": {
